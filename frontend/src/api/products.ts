@@ -1,10 +1,8 @@
-export type Product = {
-  id: number
-  name: string
-}
+// All HTTP calls to /api/products live here, so components never call fetch directly.
+import type { Page, Product } from '../types/product'
 
-export async function listProducts(): Promise<Product[]> {
-  const res = await fetch('/api/products')
+export async function listProducts(page: number, size: number): Promise<Page<Product>> {
+  const res = await fetch(`/api/products?page=${page}&size=${size}`)
   if (!res.ok) throw new Error(`Failed to load products (${res.status})`)
   return res.json()
 }

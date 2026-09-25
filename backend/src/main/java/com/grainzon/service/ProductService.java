@@ -1,12 +1,12 @@
 package com.grainzon.service;
 
-import java.util.List;
-
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.grainzon.dto.CreateProductRequest;
+import com.grainzon.dto.PageResponse;
 import com.grainzon.dto.ProductResponse;
 import com.grainzon.entity.Product;
 import com.grainzon.repository.ProductRepository;
@@ -21,8 +21,8 @@ public class ProductService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<ProductResponse> list() {
-		return repository.findAll(Sort.by("id")).stream().map(ProductResponse::from).toList();
+	public PageResponse<ProductResponse> list(int page, int size) {
+		return PageResponse.from(repository.findAll(PageRequest.of(page, size, Sort.by("id"))), ProductResponse::from);
 	}
 
 	@Transactional

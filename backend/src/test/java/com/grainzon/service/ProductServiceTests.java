@@ -13,10 +13,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.grainzon.dto.CreateProductRequest;
+import com.grainzon.dto.PageResponse;
 import com.grainzon.dto.ProductResponse;
 import com.grainzon.entity.Product;
 import com.grainzon.repository.ProductRepository;
@@ -31,11 +34,18 @@ class ProductServiceTests {
 	private ProductService productService;
 
 	@Test
-	void listReturnsProductsSortedById() {
-		given(repository.findAll(Sort.by("id"))).willReturn(List.of(product(1, "Hammer"), product(2, "Wrench")));
+	void listReturnsRequestedPageSortedById() {
+		PageRequest request = PageRequest.of(1, 2, Sort.by("id"));
+		given(repository.findAll(request))
+			.willReturn(new PageImpl<>(List.of(product(3, "Saw"), product(4, "Drill")), request, 5));
 
-		assertThat(productService.list())
-			.containsExactly(new ProductResponse(1, "Hammer"), new ProductResponse(2, "Wrench"));
+		PageResponse<ProductResponse> page = productService.list(1, 2);
+
+		assertThat(page.content()).containsExactly(new ProductResponse(3, "Saw"), new ProductResponse(4, "Drill"));
+		assertThat(page.page()).isEqualTo(1);
+		assertThat(page.size()).isEqualTo(2);
+		assertThat(page.totalElements()).isEqualTo(5);
+		assertThat(page.totalPages()).isEqualTo(3);
 	}
 
 	@Test

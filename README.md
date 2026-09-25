@@ -30,7 +30,7 @@ The Vite dev server proxies `/api` to the backend.
 
 | Method | Path            | Body               | Response                  |
 |--------|-----------------|--------------------|---------------------------|
-| GET    | `/api/products` |                    | `200` list of products    |
+| GET    | `/api/products?page=0&size=10` |     | `200` one page: `{content, page, size, totalElements, totalPages}`. `page` is zero-based (default 0); `size` 1–100 (default 10) |
 | POST   | `/api/products` | `{"name": "..."}`  | `201` created product, `400` if name is blank |
 
 ## Database
