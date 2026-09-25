@@ -1,4 +1,4 @@
-package com.grainzon.product;
+package com.grainzon.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -15,11 +15,13 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
+
+import com.grainzon.dto.CreateProductRequest;
+import com.grainzon.dto.ProductResponse;
+import com.grainzon.service.ProductService;
 
 @WebMvcTest(ProductController.class)
 class ProductControllerTests {
@@ -28,11 +30,12 @@ class ProductControllerTests {
 	private MockMvc mvc;
 
 	@MockitoBean
-	private ProductRepository repository;
+	private ProductService productService;
 
 	@Test
 	void listReturnsProducts() throws Exception {
-		given(repository.findAll(any(Sort.class))).willReturn(List.of(product(1, "Hammer"), product(2, "Wrench")));
+		given(productService.list())
+			.willReturn(List.of(new ProductResponse(1, "Hammer"), new ProductResponse(2, "Wrench")));
 
 		mvc.perform(get("/api/products"))
 			.andExpect(status().isOk())
@@ -43,9 +46,9 @@ class ProductControllerTests {
 
 	@Test
 	void createReturnsCreatedProduct() throws Exception {
-		given(repository.save(any(Product.class))).willReturn(product(7, "Drill"));
+		given(productService.create(any(CreateProductRequest.class))).willReturn(new ProductResponse(7, "Drill"));
 
-		mvc.perform(post("/api/products").contentType(MediaType.APPLICATION_JSON).content("{\"name\":\"  Drill \"}"))
+		mvc.perform(post("/api/products").contentType(MediaType.APPLICATION_JSON).content("{\"name\":\"Drill\"}"))
 			.andExpect(status().isCreated())
 			.andExpect(header().string("Location", "/api/products/7"))
 			.andExpect(jsonPath("$.id").value(7))
@@ -57,13 +60,7 @@ class ProductControllerTests {
 		mvc.perform(post("/api/products").contentType(MediaType.APPLICATION_JSON).content("{\"name\":\"  \"}"))
 			.andExpect(status().isBadRequest());
 
-		verify(repository, never()).save(any());
-	}
-
-	private static Product product(int id, String name) {
-		Product product = new Product(name);
-		ReflectionTestUtils.setField(product, "id", id);
-		return product;
+		verify(productService, never()).create(any());
 	}
 
 }

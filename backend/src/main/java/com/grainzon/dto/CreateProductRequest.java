@@ -1,4 +1,4 @@
-package com.grainzon.product;
+package com.grainzon.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
