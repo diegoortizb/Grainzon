@@ -136,6 +136,27 @@ describe('ProductListPage', () => {
     expect(await screen.findByText('Page 1 size 50')).toBeInTheDocument()
   })
 
+  it('moves to the last page when the URL points past it', async () => {
+    vi.mocked(listProducts).mockImplementation(async (p, s) =>
+      page({ content: p < 25 ? [{ id: p + 1, name: `Product on page ${p}` }] : [], page: p, size: s, totalElements: 250, totalPages: 25 }),
+    )
+    renderAt('/products?page=30')
+
+    expect(await screen.findByText('Page 25 of 25')).toBeInTheDocument()
+    expect(screen.getByText('Product on page 24')).toBeInTheDocument()
+    expect(listProducts).toHaveBeenLastCalledWith(24, 10)
+  })
+
+  it('keeps the page size when moving back to the last page', async () => {
+    vi.mocked(listProducts).mockImplementation(async (p, s) =>
+      page({ content: p < 5 ? [{ id: p + 1, name: `Page ${p} size ${s}` }] : [], page: p, size: s, totalElements: 250, totalPages: 5 }),
+    )
+    renderAt('/products?page=9&size=50')
+
+    expect(await screen.findByText('Page 4 size 50')).toBeInTheDocument()
+    expect(listProducts).toHaveBeenLastCalledWith(4, 50)
+  })
+
   it('loads the next page when Next is clicked', async () => {
     vi.mocked(listProducts).mockImplementation(async (p) =>
       page({ content: [{ id: p + 1, name: `Product on page ${p}` }], page: p, totalElements: 15, totalPages: 2 }),

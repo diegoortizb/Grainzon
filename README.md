@@ -41,6 +41,7 @@ Without npm scripts at the root: `cd frontend && npm run dev`. Requests to `/api
 | `npm run dev`     | Postgres + backend + frontend in one terminal |
 | `npm run build`   | Backend jar and frontend bundle               |
 | `npm test`        | Backend tests, frontend lint and frontend tests |
+| `npm run db:seed` | Replace all products with 250 samples from `scripts/seed.sql` (Postgres must be running) |
 | `npm run db:clear` | Delete all products and reset ids to 1 (Postgres must be running) |
 | `npm run db:down` | Stop Postgres                                 |
 

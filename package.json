@@ -10,6 +10,7 @@
     "test": "node scripts/gradlew.mjs test && npm --prefix frontend run lint && npm --prefix frontend test",
     "db:up": "docker compose up -d --wait",
     "db:down": "docker compose down",
+    "db:seed": "docker compose exec -T postgres psql -U grainzon -d grainzon -v ON_ERROR_STOP=1 -q -f - < scripts/seed.sql",
     "db:clear": "docker compose exec -T postgres psql -U grainzon -d grainzon -c \"TRUNCATE products RESTART IDENTITY;\""
   },
   "devDependencies": {

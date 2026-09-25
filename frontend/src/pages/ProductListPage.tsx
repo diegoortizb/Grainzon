@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import Pagination from '../components/Pagination'
 import { useProducts } from '../hooks/useProducts'
@@ -6,6 +6,14 @@ import { useProducts } from '../hooks/useProducts'
 // The backend caps size at 100.
 const PAGE_SIZES = [10, 50, 100]
 const DEFAULT_PAGE_SIZE = 10
+
+// URL query for a page and size. Defaults are left out to keep URLs short.
+function toSearchParams(page: number, size: number) {
+  const params: Record<string, string> = {}
+  if (page !== 1) params.page = String(page)
+  if (size !== DEFAULT_PAGE_SIZE) params.size = String(size)
+  return params
+}
 
 function ProductListPage() {
   // Page and size live in the URL (?page=2&size=50) so refresh and the back button keep your place.
@@ -28,11 +36,18 @@ function ProductListPage() {
     })
   }
 
+  // Past the last page (a hand-edited URL, or an old link after products were removed):
+  // move to the last page. `replace` keeps the invalid URL out of history, so Back still works.
+  // Only once the current request has finished, since `data` may still be the previous page's.
+  const lastPage = data && !loading ? data.totalPages : 0
+  useEffect(() => {
+    if (lastPage > 0 && page > lastPage) {
+      setSearchParams(toSearchParams(lastPage, size), { replace: true })
+    }
+  }, [lastPage, page, size, setSearchParams])
+
   function navigate(nextPage: number, nextSize: number) {
-    const params: Record<string, string> = {}
-    if (nextPage !== 1) params.page = String(nextPage)
-    if (nextSize !== DEFAULT_PAGE_SIZE) params.size = String(nextSize)
-    setSearchParams(params)
+    setSearchParams(toSearchParams(nextPage, nextSize))
   }
 
   if (error) return <p className="error">{error}</p>
