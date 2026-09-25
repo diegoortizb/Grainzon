@@ -146,11 +146,11 @@ td:first-child {
   font-size: 0.875rem;
 }
 
-.list-footer {
+.list-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 1rem;
+  margin-bottom: 0.75rem;
   font-size: 0.875rem;
 }
 

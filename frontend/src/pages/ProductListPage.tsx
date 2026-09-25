@@ -44,6 +44,24 @@ function ProductListPage() {
 
   return (
     <section className={loading ? 'loading' : undefined}>
+      <div className="list-toolbar">
+        <label className="page-size">
+          Show{' '}
+          {/* A new size changes what each page number means, so start again from page 1. */}
+          <select value={size} onChange={(e) => navigate(1, Number(e.target.value))}>
+            {PAGE_SIZES.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>{' '}
+          per page
+        </label>
+        <span className="muted">
+          {data.totalElements} {data.totalElements === 1 ? 'product' : 'products'}
+        </span>
+      </div>
+
       {data.content.length === 0 ? (
         <p className="muted">No products on this page.</p>
       ) : (
@@ -77,24 +95,6 @@ function ProductListPage() {
       )}
 
       <Pagination page={page} totalPages={data.totalPages} onChange={(next) => navigate(next, size)} />
-
-      <div className="list-footer">
-        <label className="page-size">
-          Show{' '}
-          {/* A new size changes what each page number means, so start again from page 1. */}
-          <select value={size} onChange={(e) => navigate(1, Number(e.target.value))}>
-            {PAGE_SIZES.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>{' '}
-          per page
-        </label>
-        <span className="muted">
-          {data.totalElements} {data.totalElements === 1 ? 'product' : 'products'}
-        </span>
-      </div>
     </section>
   )
 }
