@@ -11,18 +11,18 @@ Minimal products app: Spring Boot 4 (Java 25) REST API, React + Vite frontend, P
 ## Run locally
 
 ```sh
-# 1. Start Postgres
-docker compose up -d
-
-# 2. Start the backend (http://localhost:8080)
-cd backend
-./gradlew bootRun
-
-# 3. Start the frontend (http://localhost:5173)
-cd frontend
-npm install
-npm run dev
+npm install      # first time only: installs root + frontend dependencies
+npm run dev      # starts Postgres, backend (:8080) and frontend (:5173)
 ```
+
+Open http://localhost:5173. Ctrl+C stops the backend and frontend; Postgres keeps running.
+
+| Command           | What it does                                  |
+|-------------------|-----------------------------------------------|
+| `npm run dev`     | Postgres + backend + frontend in one terminal |
+| `npm run build`   | Backend jar and frontend bundle               |
+| `npm test`        | Backend tests and frontend lint               |
+| `npm run db:down` | Stop Postgres                                 |
 
 The Vite dev server proxies `/api` to the backend.
 
@@ -38,10 +38,3 @@ The Vite dev server proxies `/api` to the backend.
 Schema is managed by Flyway (`backend/src/main/resources/db/migration`). Add changes as new `V<n>__description.sql` files; never edit an applied migration.
 
 Connection defaults to `jdbc:postgresql://localhost:5432/grainzon` (user/password `grainzon`), overridable with `DB_URL`, `DB_USER`, `DB_PASSWORD`.
-
-## Tests
-
-```sh
-cd backend
-./gradlew test
-```
