@@ -7,9 +7,10 @@
     "dev:api": "node scripts/gradlew.mjs bootRun --console=plain",
     "dev:web": "npm --prefix frontend run dev",
     "build": "node scripts/gradlew.mjs build -x test && npm --prefix frontend run build",
-    "test": "node scripts/gradlew.mjs test && npm --prefix frontend run lint",
+    "test": "node scripts/gradlew.mjs test && npm --prefix frontend run lint && npm --prefix frontend test",
     "db:up": "docker compose up -d --wait",
-    "db:down": "docker compose down"
+    "db:down": "docker compose down",
+    "db:clear": "docker compose exec -T postgres psql -U grainzon -d grainzon -c \"TRUNCATE products RESTART IDENTITY;\""
   },
   "devDependencies": {
     "concurrently": "^10.0.5"

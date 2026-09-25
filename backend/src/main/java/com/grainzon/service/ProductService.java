@@ -27,7 +27,7 @@ public class ProductService {
 
 	@Transactional
 	public ProductResponse create(CreateProductRequest request) {
-		Product saved = repository.save(new Product(request.name().trim()));
+		Product saved = repository.save(new Product(request.name()));
 		return ProductResponse.from(saved);
 	}
 

@@ -37,7 +37,9 @@ function ProductListPage() {
             {data.content.map((p) => (
               <tr key={p.id}>
                 <td>{p.id}</td>
-                <td>{p.name}</td>
+                <td className="truncate" title={p.name}>
+                  {p.name}
+                </td>
               </tr>
             ))}
           </tbody>

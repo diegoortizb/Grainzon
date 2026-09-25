@@ -21,17 +21,34 @@ Open http://localhost:5173. Ctrl+C stops the backend and frontend; Postgres keep
 |-------------------|-----------------------------------------------|
 | `npm run dev`     | Postgres + backend + frontend in one terminal |
 | `npm run build`   | Backend jar and frontend bundle               |
-| `npm test`        | Backend tests and frontend lint               |
+| `npm test`        | Backend tests, frontend lint and frontend tests |
+| `npm run db:clear` | Delete all products and reset ids to 1 (Postgres must be running) |
 | `npm run db:down` | Stop Postgres                                 |
 
 The Vite dev server proxies `/api` to the backend.
+
+## Run tests
+
+No database needed. From the repo root:
+
+```sh
+npm test                                                  # everything: backend tests, frontend lint, frontend tests
+node scripts/gradlew.mjs test                             # backend only (add --rerun to force a run when nothing changed)
+node scripts/gradlew.mjs test --tests ProductServiceTests # one backend test class
+npm --prefix frontend test                                # frontend only
+npm --prefix frontend run test:watch                      # frontend, re-running on save
+```
+
+The backend test report is at `backend/build/reports/tests/test/index.html`.
+
+On Windows, run these from PowerShell or cmd. A WSL terminal can't see the Windows JDK. If you're in WSL, run `cmd.exe /c gradlew.bat test` from `backend/`.
 
 ## API
 
 | Method | Path            | Body               | Response                  |
 |--------|-----------------|--------------------|---------------------------|
 | GET    | `/api/products?page=0&size=10` |     | `200` one page: `{content, page, size, totalElements, totalPages}`. `page` is zero-based (default 0); `size` 1–100 (default 10) |
-| POST   | `/api/products` | `{"name": "..."}`  | `201` created product, `400` if name is blank |
+| POST   | `/api/products` | `{"name": "..."}`  | `201` created product, `400` if name is blank or over 256 characters (surrounding whitespace is trimmed first) |
 
 ## Database
 

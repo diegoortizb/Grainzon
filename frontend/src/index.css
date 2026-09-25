@@ -77,6 +77,8 @@ button:disabled {
 table {
   width: 100%;
   border-collapse: collapse;
+  /* Fixed layout lets cells shrink below their content, which the ellipsis in .truncate needs. */
+  table-layout: fixed;
 }
 
 th,
@@ -89,6 +91,14 @@ td {
 th:first-child,
 td:first-child {
   width: 4rem;
+}
+
+/* Long names: one line ending in "…"; the full name is in the title tooltip. */
+
+.truncate {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 /* Pagination */

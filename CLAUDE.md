@@ -1,4 +1,4 @@
-# Grainzon
+ # Grainzon
 
 A minimal products app: list products (paged, 10 per page) and create new ones. There is no update or delete.
 
@@ -15,6 +15,7 @@ The README is the human-facing guide. Read it for run steps, the API contract an
 - `npm test`: runs the backend tests (`gradlew test`) and the frontend lint (oxlint)
 - `npm run build`: builds the backend jar and the frontend bundle
 - `npm run db:up` / `npm run db:down`: start or stop Postgres
+- `npm run db:clear`: deletes all products and resets ids to 1. It keeps the schema and Flyway history, and Postgres must be running. For a full wipe, use `docker compose down -v` (Flyway recreates the schema on the next backend start).
 
 `scripts/gradlew.mjs` runs `gradlew.bat` or `./gradlew` depending on the OS. Use it (or the npm scripts) instead of hard-coding either one.
 

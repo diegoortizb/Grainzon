@@ -1,5 +1,6 @@
 import { useRef, useState, type FormEvent } from 'react'
 import { createProduct } from '../api/products'
+import { PRODUCT_NAME_MAX_LENGTH } from '../types/product'
 
 function AddProductPage() {
   const [name, setName] = useState('')
@@ -37,6 +38,7 @@ function AddProductPage() {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="e.g. Cordless drill"
+          maxLength={PRODUCT_NAME_MAX_LENGTH}
           autoFocus
           required
         />
@@ -45,7 +47,11 @@ function AddProductPage() {
         </button>
       </div>
 
-      {added && <p className="success">Added “{added}”.</p>}
+      {added && (
+        <p className="success truncate" title={added}>
+          Added “{added}”.
+        </p>
+      )}
       {error && <p className="error">{error}</p>}
     </form>
   )

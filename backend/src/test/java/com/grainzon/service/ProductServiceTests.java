@@ -49,10 +49,10 @@ class ProductServiceTests {
 	}
 
 	@Test
-	void createTrimsNameAndSaves() {
+	void createSavesProductAndReturnsIt() {
 		given(repository.save(any(Product.class))).willReturn(product(7, "Drill"));
 
-		ProductResponse created = productService.create(new CreateProductRequest("  Drill "));
+		ProductResponse created = productService.create(new CreateProductRequest("Drill"));
 
 		ArgumentCaptor<Product> saved = ArgumentCaptor.forClass(Product.class);
 		verify(repository).save(saved.capture());

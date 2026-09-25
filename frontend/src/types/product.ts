@@ -12,3 +12,6 @@ export type Page<T> = {
   totalElements: number
   totalPages: number
 }
+
+// Must match the backend's limit (Product.NAME_MAX_LENGTH).
+export const PRODUCT_NAME_MAX_LENGTH = 256

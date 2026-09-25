@@ -88,4 +88,48 @@ class ProductControllerTests {
 		verify(productService, never()).create(any());
 	}
 
+	@Test
+	void createRejectsMissingName() throws Exception {
+		mvc.perform(post("/api/products").contentType(MediaType.APPLICATION_JSON).content("{}"))
+			.andExpect(status().isBadRequest());
+		mvc.perform(post("/api/products").contentType(MediaType.APPLICATION_JSON).content("{\"name\":null}"))
+			.andExpect(status().isBadRequest());
+
+		verify(productService, never()).create(any());
+	}
+
+	@Test
+	void createAcceptsNameAtMaxLength() throws Exception {
+		String name = "a".repeat(256);
+		given(productService.create(any(CreateProductRequest.class))).willReturn(new ProductResponse(1, name));
+
+		mvc.perform(post("/api/products").contentType(MediaType.APPLICATION_JSON).content(json(name)))
+			.andExpect(status().isCreated());
+
+		verify(productService).create(new CreateProductRequest(name));
+	}
+
+	@Test
+	void createRejectsNameOverMaxLength() throws Exception {
+		mvc.perform(post("/api/products").contentType(MediaType.APPLICATION_JSON).content(json("a".repeat(257))))
+			.andExpect(status().isBadRequest());
+
+		verify(productService, never()).create(any());
+	}
+
+	@Test
+	void createAppliesMaxLengthAfterTrimming() throws Exception {
+		String name = "a".repeat(256);
+		given(productService.create(any(CreateProductRequest.class))).willReturn(new ProductResponse(1, name));
+
+		mvc.perform(post("/api/products").contentType(MediaType.APPLICATION_JSON).content(json("  " + name + "  ")))
+			.andExpect(status().isCreated());
+
+		verify(productService).create(new CreateProductRequest(name));
+	}
+
+	private static String json(String name) {
+		return "{\"name\":\"" + name + "\"}";
+	}
+
 }

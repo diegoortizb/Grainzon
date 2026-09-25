@@ -11,11 +11,13 @@ import jakarta.persistence.Table;
 @Table(name = "products")
 public class Product {
 
+	public static final int NAME_MAX_LENGTH = 256;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(nullable = false)
+	@Column(nullable = false, length = NAME_MAX_LENGTH)
 	private String name;
 
 	protected Product() {
