@@ -101,6 +101,23 @@ td:first-child {
   text-overflow: ellipsis;
 }
 
+/* Product names in the list: a plain-looking button that toggles between one line and the full name. */
+
+.name-toggle {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-align: left;
+}
+
+.name-toggle.expanded {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
 /* Pagination */
 
 .pagination {
@@ -124,9 +141,24 @@ td:first-child {
   opacity: 0.6;
 }
 
-.count {
-  text-align: right;
+.hint {
+  margin: 0.25rem 0 0;
   font-size: 0.875rem;
+}
+
+.list-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+}
+
+/* Overrides the block label used by forms. */
+.page-size {
+  display: inline;
+  margin: 0;
+  font-weight: normal;
 }
 
 .loading {

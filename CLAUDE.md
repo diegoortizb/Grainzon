@@ -1,6 +1,6 @@
  # Grainzon
 
-A minimal products app: list products (paged, 10 per page) and create new ones. There is no update or delete.
+A minimal products app: list products (paged, 10, 50 or 100 per page; default 10) and create new ones. There is no update or delete.
 
 - **backend/**: Spring Boot 4.1 on Java 25, built with Gradle (Groovy `build.gradle`). REST API under `/api/products`.
 - **frontend/**: React 19 + TypeScript + Vite, with React Router. Two tabs: `/products` (paged list) and `/products/new` (add form).
@@ -11,7 +11,8 @@ The README is the human-facing guide. Read it for run steps, the API contract an
 ## Commands (run from the repo root)
 
 - `npm install`: installs root and frontend dependencies (first time only)
-- `npm run dev`: starts Postgres, the backend on :8080 and the frontend on :5173 together
+- `npm run dev`: starts Postgres, the backend on :8080 and the frontend on :3000 together
+- `npm run dev:api` / `npm run dev:web`: start only the backend or only the frontend (`dev:api` needs Postgres running: `npm run db:up`)
 - `npm test`: runs the backend tests (`gradlew test`) and the frontend lint (oxlint)
 - `npm run build`: builds the backend jar and the frontend bundle
 - `npm run db:up` / `npm run db:down`: start or stop Postgres
@@ -40,7 +41,7 @@ Tests mirror this layout: `@WebMvcTest` for controllers (service mocked) and pla
 - `pages/`: one component per route
 - `App.tsx`: route table. `index.css` holds all styles.
 
-The list page's page number is one-based in the URL (`?page=2`) and zero-based in the API. Vite forwards `/api` requests to `localhost:8080`.
+The list page keeps its state in the URL: `?page=` is one-based (zero-based in the API) and `?size=` is 10, 50 or 100. Defaults are left out of the URL, invalid values fall back to them, and changing the size returns to page 1. Vite forwards `/api` requests to `localhost:8080`.
 
 ## Conventions
 

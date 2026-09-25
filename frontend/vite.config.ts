@@ -6,6 +6,9 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [react()],
   server: {
+    port: 3000,
+    // Fail instead of silently moving to 3001 when 3000 is taken, so the URL in the README is always right.
+    strictPort: true,
     proxy: {
       '/api': 'http://localhost:8080',
     },

@@ -47,6 +47,16 @@ describe('AddProductPage', () => {
     expect(input).toHaveValue('Drill')
   })
 
+  it('shows the character limit and how much of it is used', async () => {
+    render(<AddProductPage />)
+    const input = screen.getByLabelText('Name')
+
+    expect(input).toHaveAccessibleDescription(`0 / ${PRODUCT_NAME_MAX_LENGTH} characters`)
+    expect(input).toHaveAttribute('title', `Up to ${PRODUCT_NAME_MAX_LENGTH} characters`)
+    await userEvent.type(input, 'Drill')
+    expect(input).toHaveAccessibleDescription(`5 / ${PRODUCT_NAME_MAX_LENGTH} characters`)
+  })
+
   it('stops typing at the maximum name length', async () => {
     render(<AddProductPage />)
     const input = screen.getByLabelText('Name')

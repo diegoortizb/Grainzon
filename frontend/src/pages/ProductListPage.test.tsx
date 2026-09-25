@@ -45,6 +45,24 @@ describe('ProductListPage', () => {
     expect(await screen.findByText(name)).toHaveAttribute('title', name)
   })
 
+  it('expands and collapses a name when it is clicked, one row at a time', async () => {
+    vi.mocked(listProducts).mockResolvedValue(
+      page({ content: [{ id: 1, name: 'Hammer' }, { id: 2, name: 'Wrench' }], totalElements: 2, totalPages: 1 }),
+    )
+    renderAt('/products')
+    const hammer = await screen.findByRole('button', { name: 'Hammer' })
+    const wrench = screen.getByRole('button', { name: 'Wrench' })
+
+    expect(hammer).toHaveAttribute('aria-expanded', 'false')
+    await userEvent.click(hammer)
+    expect(hammer).toHaveAttribute('aria-expanded', 'true')
+    expect(hammer).not.toHaveAttribute('title')
+    expect(wrench).toHaveAttribute('aria-expanded', 'false')
+
+    await userEvent.click(hammer)
+    expect(hammer).toHaveAttribute('aria-expanded', 'false')
+  })
+
   it('shows an empty state when there are no products', async () => {
     vi.mocked(listProducts).mockResolvedValue(page())
     renderAt('/products')
@@ -73,6 +91,49 @@ describe('ProductListPage', () => {
 
     await screen.findByText('No products yet.')
     expect(listProducts).toHaveBeenCalledWith(0, 10)
+  })
+
+  it('uses the page size from the URL', async () => {
+    vi.mocked(listProducts).mockResolvedValue(page({ size: 50, totalElements: 1, totalPages: 1, content: [{ id: 1, name: 'Hammer' }] }))
+    renderAt('/products?size=50')
+
+    await screen.findByText('Hammer')
+    expect(listProducts).toHaveBeenCalledWith(0, 50)
+    expect(screen.getByRole('combobox')).toHaveValue('50')
+  })
+
+  it.each(['7', '1000', 'abc'])('falls back to 10 per page for ?size=%s', async (value) => {
+    vi.mocked(listProducts).mockResolvedValue(page({ totalElements: 1, totalPages: 1, content: [{ id: 1, name: 'Hammer' }] }))
+    renderAt(`/products?size=${value}`)
+
+    await screen.findByText('Hammer')
+    expect(listProducts).toHaveBeenCalledWith(0, 10)
+    expect(screen.getByRole('combobox')).toHaveValue('10')
+  })
+
+  it('goes back to the first page when the page size changes', async () => {
+    vi.mocked(listProducts).mockImplementation(async (p, s) =>
+      page({ content: [{ id: 1, name: `Page ${p} size ${s}` }], page: p, size: s, totalElements: 60, totalPages: Math.ceil(60 / s) }),
+    )
+    renderAt('/products?page=3')
+
+    await screen.findByText('Page 2 size 10')
+    await userEvent.selectOptions(screen.getByRole('combobox'), '50')
+
+    expect(await screen.findByText('Page 0 size 50')).toBeInTheDocument()
+    expect(listProducts).toHaveBeenLastCalledWith(0, 50)
+  })
+
+  it('keeps the page size when moving between pages', async () => {
+    vi.mocked(listProducts).mockImplementation(async (p, s) =>
+      page({ content: [{ id: 1, name: `Page ${p} size ${s}` }], page: p, size: s, totalElements: 60, totalPages: 2 }),
+    )
+    renderAt('/products?size=50')
+
+    await screen.findByText('Page 0 size 50')
+    await userEvent.click(screen.getByRole('button', { name: /next/i }))
+
+    expect(await screen.findByText('Page 1 size 50')).toBeInTheDocument()
   })
 
   it('loads the next page when Next is clicked', async () => {

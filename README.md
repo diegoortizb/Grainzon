@@ -12,10 +12,29 @@ Minimal products app: Spring Boot 4 (Java 25) REST API, React + Vite frontend, P
 
 ```sh
 npm install      # first time only: installs root + frontend dependencies
-npm run dev      # starts Postgres, backend (:8080) and frontend (:5173)
+npm run dev      # starts Postgres, backend (:8080) and frontend (:3000)
 ```
 
-Open http://localhost:5173. Ctrl+C stops the backend and frontend; Postgres keeps running.
+Open http://localhost:3000. Ctrl+C stops the backend and frontend; Postgres keeps running.
+
+To run the pieces separately, use the two sections below, each in its own terminal.
+
+## Start backend
+
+```sh
+npm run db:up        # Postgres, if it isn't running yet
+npm run dev:api      # Spring Boot on http://localhost:8080
+```
+
+Without npm: `cd backend`, then `./gradlew bootRun` (macOS/Linux) or `gradlew.bat bootRun` (Windows). Flyway creates the `products` table on startup.
+
+## Start frontend
+
+```sh
+npm run dev:web      # Vite on http://localhost:3000
+```
+
+Without npm scripts at the root: `cd frontend && npm run dev`. Requests to `/api` are forwarded to the backend on :8080.
 
 | Command           | What it does                                  |
 |-------------------|-----------------------------------------------|

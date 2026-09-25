@@ -39,6 +39,8 @@ function AddProductPage() {
           onChange={(e) => setName(e.target.value)}
           placeholder="e.g. Cordless drill"
           maxLength={PRODUCT_NAME_MAX_LENGTH}
+          title={`Up to ${PRODUCT_NAME_MAX_LENGTH} characters`}
+          aria-describedby="name-hint"
           autoFocus
           required
         />
@@ -46,6 +48,9 @@ function AddProductPage() {
           {saving ? 'Adding…' : 'Add'}
         </button>
       </div>
+      <p id="name-hint" className="muted hint">
+        {name.length} / {PRODUCT_NAME_MAX_LENGTH} characters
+      </p>
 
       {added && (
         <p className="success truncate" title={added}>
