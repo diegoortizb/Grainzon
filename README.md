@@ -100,15 +100,13 @@ Errors are returned as `application/problem+json` (RFC 9457). Validation errors 
 
 Unexpected errors return `500` with the detail `Something went wrong.`, and are logged at `ERROR` with the stack trace. The response never includes internal details.
 
-The app logs at `INFO` by default: one line per created product. For debug logs (each list request, each create, each rejected request and the reason), start the backend with `LOGGING_LEVEL_COM_GRAINZON=DEBUG`:
+The app logs at `INFO` by default: one line per created product. For debug logs (each list request, each create, each rejected request and the reason), change this line in `backend/src/main/resources/application.properties` and restart the backend:
 
-```powershell
-$env:LOGGING_LEVEL_COM_GRAINZON = "DEBUG"; npm run dev   # PowerShell
+```properties
+logging.level.com.grainzon=DEBUG
 ```
 
-```sh
-LOGGING_LEVEL_COM_GRAINZON=DEBUG npm run dev             # macOS/Linux
-```
+Set it back to `INFO` before committing, so debug logging doesn't reach production.
 
 ## Notes
 
@@ -128,8 +126,3 @@ LOGGING_LEVEL_COM_GRAINZON=DEBUG npm run dev             # macOS/Linux
 
 - **Tools:** Claude Code in VS Code throughout. I used it to review the app against the brief and implement changes, and to verify each one with tests and against the running app (API calls). I reviewed every change and made the commits myself.
 - **Repeatable process:** `CLAUDE.md` records the project layout and conventions so an AI assistant or a teammate works the same way: a layered backend, schema changes only through new Flyway migrations, the README updated in the same change, and `npm test` before finishing.
-- **Decisions worth noting:**
-  - Flyway owns the schema.
-  - A page past the end returns `200` with an empty list (the UI corrects the URL), while malformed paging returns `400`.
-  - Sample data is a seed script, not a migration, so it never reaches other environments.
-  - Lombok was tried and reverted: with one entity and records for DTOs it didn't pay for itself..
