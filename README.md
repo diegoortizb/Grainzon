@@ -26,7 +26,27 @@ Open http://localhost:3000. Ctrl+C stops the backend and frontend; Postgres keep
 | `npm run db:clear` | Delete all products and reset ids to 1 (Postgres must be running)                        |
 | `npm run db:down`  | Stop Postgres                                                                            |
 
-To run the pieces separately, use the two sections below, each in its own terminal.
+To run the pieces separately, follow the next three sections.
+
+## Database setup
+
+Postgres 18 runs in Docker, defined in `docker-compose.yml`. The database, user and password are all `grainzon`, on port 5432.
+
+```sh
+npm run db:up        # start Postgres and wait until it's ready (same as: docker compose up -d --wait)
+```
+
+Flyway runs the migrations in `backend/src/main/resources/db/migration`.
+
+Optional:
+
+```sh
+npm run db:seed      # replace all products with 250 samples (after the backend has started once)
+npm run db:clear     # delete all products and reset ids to 1
+docker compose down -v   # delete the database entirely; Flyway recreates it on the next backend start
+```
+
+The backend connects to `jdbc:postgresql://localhost:5432/grainzon` by default. Override it with `DB_URL`, `DB_USER` and `DB_PASSWORD`. Schema changes go in new `V<n>__description.sql` files. Never edit a migration that has already been applied.
 
 ## Start backend
 
@@ -83,12 +103,6 @@ On Windows, run these from PowerShell or cmd. A WSL terminal can't see the Windo
 |--------|-----------------|--------------------|---------------------------|
 | GET    | `/api/products?page=0&size=10` |     | `200` one page: `{content, page, size, totalElements, totalPages}`. `page` is zero-based (default 0); `size` 1–100 (default 10) |
 | POST   | `/api/products` | `{"name": "..."}`  | `201` created product, `400` if name is blank, over 256 characters or contains control characters such as NUL, tab or newline (surrounding whitespace is trimmed first) |
-
-## Database
-
-Schema is managed by Flyway (`backend/src/main/resources/db/migration`). Add changes as new `V<n>__description.sql` files; never edit an applied migration.
-
-Connection defaults to `jdbc:postgresql://localhost:5432/grainzon` (user/password `grainzon`), overridable with `DB_URL`, `DB_USER`, `DB_PASSWORD`.
 
 ## Errors and logging
 
