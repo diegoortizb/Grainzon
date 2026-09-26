@@ -25,7 +25,8 @@ The README is the human-facing guide. Read it for run steps, the API contract an
 
 Organized by layer:
 
-- `controller/`: HTTP only (routing, `@Valid`, status codes). Calls the service and never the repository.
+- `controller/`: HTTP only (routing, `@Valid`, status codes). Calls the service and never the repository. `GlobalExceptionHandler` turns every error into problem+json: validation failures get an `errors` map from field to message, and anything unexpected becomes a logged 500 with a generic message. Don't catch exceptions in controllers; let them reach the handler.
+- Logging: SLF4J, one `private static final Logger log` per class. `info` for state changes (for example "Created product id=…"), `debug` for per-request detail and rejected requests, `error` only for unexpected failures (the handler already does this). Never log secrets.
 - `service/`: business logic and `@Transactional` boundaries. Maps entities to DTOs.
 - `repository/`: Spring Data JPA interfaces
 - `entity/`: JPA entities
@@ -35,7 +36,7 @@ Tests mirror this layout: `@WebMvcTest` for controllers (service mocked) and pla
 
 ## Frontend layout (`frontend/src/`)
 
-- `api/`: the only place that calls `fetch`
+- `api/`: the only place that calls `fetch`. Turns problem+json error bodies into readable `Error` messages (field errors first, then `detail`, then the status code).
 - `types/`: shapes of the API's JSON
 - `hooks/`: data loading (for example `useProducts(page, size)`)
 - `components/`: reusable UI (`Layout` with the tabs, `Pagination`)

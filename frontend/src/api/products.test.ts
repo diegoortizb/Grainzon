@@ -14,10 +14,16 @@ describe('listProducts', () => {
     expect(fetch).toHaveBeenCalledWith('/api/products?page=2&size=5')
   })
 
-  it('throws with the status code when the request fails', async () => {
-    mockFetch(500)
+  it("uses the server's detail when there are no field errors", async () => {
+    mockFetch(500, { status: 500, detail: 'Something went wrong.' })
 
-    await expect(listProducts(0, 10)).rejects.toThrow('Failed to load products (500)')
+    await expect(listProducts(0, 10)).rejects.toThrow("Couldn't load products: Something went wrong.")
+  })
+
+  it('falls back to the status code when the body is not a problem', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('<html>Bad Gateway</html>', { status: 502 }))
+
+    await expect(listProducts(0, 10)).rejects.toThrow("Couldn't load products (502).")
   })
 })
 
@@ -33,9 +39,17 @@ describe('createProduct', () => {
     })
   })
 
-  it('throws with the status code when the request fails', async () => {
+  it('explains which field failed and why', async () => {
+    mockFetch(400, { status: 400, detail: 'Invalid request.', errors: { name: 'must be at most 256 characters' } })
+
+    await expect(createProduct('a'.repeat(257))).rejects.toThrow(
+      "Couldn't create product: name must be at most 256 characters.",
+    )
+  })
+
+  it('falls back to the status code when the body is empty', async () => {
     mockFetch(400)
 
-    await expect(createProduct('')).rejects.toThrow('Failed to create product (400)')
+    await expect(createProduct('')).rejects.toThrow("Couldn't create product (400).")
   })
 })
