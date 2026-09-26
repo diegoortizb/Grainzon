@@ -142,9 +142,10 @@ describe('ProductListPage', () => {
     )
     renderAt('/products?page=30')
 
-    // Two loads in a row (the empty page, then the last one), so allow more than the default 1s on a busy machine.
-    expect(await screen.findByText('Page 25 of 25', undefined, { timeout: 5000 })).toBeInTheDocument()
-    expect(screen.getByText('Product on page 24')).toBeInTheDocument()
+    // Wait for the last page's rows, not the "Page 25 of 25" label: the label already shows while that page is
+    // still loading (page from the new URL, total from the previous response), so it doesn't prove the load finished.
+    expect(await screen.findByText('Product on page 24')).toBeInTheDocument()
+    expect(screen.getByText('Page 25 of 25')).toBeInTheDocument()
     expect(listProducts).toHaveBeenLastCalledWith(24, 10)
   })
 
@@ -154,7 +155,7 @@ describe('ProductListPage', () => {
     )
     renderAt('/products?page=9&size=50')
 
-    expect(await screen.findByText('Page 4 size 50', undefined, { timeout: 5000 })).toBeInTheDocument()
+    expect(await screen.findByText('Page 4 size 50')).toBeInTheDocument()
     expect(listProducts).toHaveBeenLastCalledWith(4, 50)
   })
 
