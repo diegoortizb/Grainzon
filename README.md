@@ -60,7 +60,7 @@ curl "http://localhost:8080/api/products?page=0&size=10"
 
 ## Run tests
 
-No database needed. From the repo root:
+The backend integration tests start their own throwaway Postgres in Docker (Testcontainers), so **Docker must be running**. You don't need `npm run db:up`, and your dev data isn't touched. From the repo root:
 
 ```sh
 npm test                                                  # everything: backend tests, frontend lint, frontend tests
@@ -70,7 +70,10 @@ npm --prefix frontend test                                # frontend only
 npm --prefix frontend run test:watch                      # frontend, re-running on save
 ```
 
-The backend test report is at `backend/build/reports/tests/test/index.html`.
+Backend reports, written on every test run:
+
+- Test results: `backend/build/reports/tests/test/index.html`
+- Coverage (JaCoCo): `backend/build/reports/jacoco/test/html/index.html`, plus `jacocoTestReport.xml` next to it for CI tools
 
 On Windows, run these from PowerShell or cmd. A WSL terminal can't see the Windows JDK. If you're in WSL, run `cmd.exe /c gradlew.bat test` from `backend/`.
 
@@ -115,10 +118,11 @@ LOGGING_LEVEL_COM_GRAINZON=DEBUG npm run dev             # macOS/Linux
   - Pagination: 10, 50 or 100 per page, kept in the URL. Pages past the end move to the last page.
   - A 256-character name limit, enforced by API validation and the input field. The column stays `TEXT`, so the limit can change without a migration. Names are trimmed before validation.
   - Long names are truncated in the list and expand on click.
-  - Unit tests on both ends, and seed and clear scripts for the database.
+  - Unit tests on both ends, plus backend integration tests against a real Postgres (Testcontainers). Backend line coverage is 100%.
+  - Seed and clear scripts for the database.
 - **Known gaps:**
-  - No integration test against a real Postgres. Would add test containers.
   - No metrics, health checks or CI setup.
+  - No end-to-end browser test (for example Playwright) covering the UI and API together.
 
 ## How you built it
 

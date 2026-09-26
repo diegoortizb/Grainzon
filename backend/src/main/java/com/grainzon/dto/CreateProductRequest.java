@@ -10,7 +10,6 @@ public record CreateProductRequest(
 		@Pattern(regexp = "\\P{Cc}*", message = "must not contain control characters")
 		String name) {
 
-	// The only place the limit is enforced on the server: the column is TEXT, so changing it needs no migration.
 	public static final int NAME_MAX_LENGTH = 256;
 
 	// Trim before validation runs, so the length limit applies to the name that is actually stored.

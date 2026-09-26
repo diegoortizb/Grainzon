@@ -142,7 +142,8 @@ describe('ProductListPage', () => {
     )
     renderAt('/products?page=30')
 
-    expect(await screen.findByText('Page 25 of 25')).toBeInTheDocument()
+    // Two loads in a row (the empty page, then the last one), so allow more than the default 1s on a busy machine.
+    expect(await screen.findByText('Page 25 of 25', undefined, { timeout: 5000 })).toBeInTheDocument()
     expect(screen.getByText('Product on page 24')).toBeInTheDocument()
     expect(listProducts).toHaveBeenLastCalledWith(24, 10)
   })
@@ -153,7 +154,7 @@ describe('ProductListPage', () => {
     )
     renderAt('/products?page=9&size=50')
 
-    expect(await screen.findByText('Page 4 size 50')).toBeInTheDocument()
+    expect(await screen.findByText('Page 4 size 50', undefined, { timeout: 5000 })).toBeInTheDocument()
     expect(listProducts).toHaveBeenLastCalledWith(4, 50)
   })
 

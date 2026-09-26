@@ -32,7 +32,7 @@ Organized by layer:
 - `entity/`: JPA entities
 - `dto/`: request and response records. `PageResponse<T>` is the paged JSON shape (`content, page, size, totalElements, totalPages`).
 
-Tests mirror this layout: `@WebMvcTest` for controllers (service mocked) and plain Mockito for services.
+Tests mirror this layout: `@WebMvcTest` for controllers (service mocked) and plain Mockito for services. `ProductApiIntegrationTests` (in `com.grainzon`) runs the whole app against a real Postgres via Testcontainers, so backend tests need Docker running. It empties the table before each test, so assert on names and order, not on specific ids. Coverage is JaCoCo (`backend/build/reports/jacoco/test/html/index.html`). Keep new code covered.
 
 ## Frontend layout (`frontend/src/`)
 
