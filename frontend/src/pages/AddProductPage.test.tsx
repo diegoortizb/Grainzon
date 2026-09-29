@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createProduct } from '../api/products'
@@ -30,10 +30,47 @@ describe('AddProductPage', () => {
 
     await userEvent.type(input, '  Drill  {Enter}')
 
-    expect(createProduct).toHaveBeenCalledWith('Drill')
-    expect(await screen.findByText('Added “Drill”.')).toBeInTheDocument()
+    expect(createProduct).toHaveBeenCalledWith('Drill', 0)
+    expect(await screen.findByText('Added “Drill” at $0.00.')).toBeInTheDocument()
     expect(input).toHaveValue('')
     expect(input).toHaveFocus()
+  })
+
+  it('creates the product with the typed price and clears the price', async () => {
+    vi.mocked(createProduct).mockResolvedValue({ id: 7, name: 'Drill', itemPrice: 19.99 })
+    render(<AddProductPage />)
+    const price = screen.getByLabelText('Price (USD)')
+
+    await userEvent.type(screen.getByLabelText('Name'), 'Drill')
+    await userEvent.type(price, '19.99{Enter}')
+
+    expect(createProduct).toHaveBeenCalledWith('Drill', 19.99)
+    expect(await screen.findByText('Added “Drill” at $19.99.')).toBeInTheDocument()
+    expect(price).toHaveValue(null)
+  })
+
+  it('disables Add and explains why when the price is negative', async () => {
+    render(<AddProductPage />)
+    const price = screen.getByLabelText('Price (USD)')
+
+    await userEvent.type(screen.getByLabelText('Name'), 'Drill')
+    expect(price).toHaveAccessibleDescription('Optional. Leave empty for $0.00.')
+    await userEvent.type(price, '-5')
+
+    expect(screen.getByRole('button', { name: 'Add' })).toBeDisabled()
+    expect(price).toHaveAccessibleDescription('Price must be 0 or more.')
+    expect(price).toBeInvalid()
+  })
+
+  it('uses a plain message when the browser rejects the price, and clears it on typing', async () => {
+    render(<AddProductPage />)
+    const price = screen.getByLabelText<HTMLInputElement>('Price (USD)')
+
+    fireEvent.invalid(price)
+    expect(price.validationMessage).toBe('Please enter a valid value')
+
+    await userEvent.type(price, '1')
+    expect(price.validationMessage).toBe('')
   })
 
   it('shows the error and keeps the name when creating fails', async () => {

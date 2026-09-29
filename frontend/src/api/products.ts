@@ -22,11 +22,11 @@ export async function listProducts(page: number, size: number): Promise<Page<Pro
   return res.json()
 }
 
-export async function createProduct(name: string): Promise<Product> {
+export async function createProduct(name: string, itemPrice: number): Promise<Product> {
   const res = await fetch('/api/products', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name }),
+    body: JSON.stringify({ name, itemPrice }),
   })
   if (!res.ok) throw new Error(await errorMessage(res, 'create product'))
   return res.json()

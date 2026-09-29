@@ -29,20 +29,20 @@ describe('listProducts', () => {
 
 describe('createProduct', () => {
   it('posts the name as JSON and returns the created product', async () => {
-    const fetch = mockFetch(201, { id: 7, name: 'Drill', itemPrice: 0 })
+    const fetch = mockFetch(201, { id: 7, name: 'Drill', itemPrice: 19.99 })
 
-    await expect(createProduct('Drill')).resolves.toEqual({ id: 7, name: 'Drill', itemPrice: 0 })
+    await expect(createProduct('Drill', 19.99)).resolves.toEqual({ id: 7, name: 'Drill', itemPrice: 19.99 })
     expect(fetch).toHaveBeenCalledWith('/api/products', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: 'Drill' }),
+      body: JSON.stringify({ name: 'Drill', itemPrice: 19.99 }),
     })
   })
 
   it('explains which field failed and why', async () => {
     mockFetch(400, { status: 400, detail: 'Invalid request.', errors: { name: 'must be at most 256 characters' } })
 
-    await expect(createProduct('a'.repeat(257))).rejects.toThrow(
+    await expect(createProduct('a'.repeat(257), 0)).rejects.toThrow(
       "Couldn't create product: name must be at most 256 characters.",
     )
   })
@@ -50,6 +50,6 @@ describe('createProduct', () => {
   it('falls back to the status code when the body is empty', async () => {
     mockFetch(400)
 
-    await expect(createProduct('')).rejects.toThrow("Couldn't create product (400).")
+    await expect(createProduct('', 0)).rejects.toThrow("Couldn't create product (400).")
   })
 })

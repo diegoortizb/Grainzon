@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -35,6 +35,18 @@ describe('ProductListPage', () => {
     expect(screen.getByText('Wrench')).toBeInTheDocument()
     expect(screen.getByText('2 products')).toBeInTheDocument()
     expect(listProducts).toHaveBeenCalledWith(0, 10)
+  })
+
+  it('shows each price as dollars in the last column', async () => {
+    vi.mocked(listProducts).mockResolvedValue(
+      page({ content: [{ id: 1, name: 'Hammer', itemPrice: 19.9 }, { id: 2, name: 'Wrench', itemPrice: 1234 }], totalElements: 2, totalPages: 1 }),
+    )
+    renderAt('/products')
+
+    const rows = await screen.findAllByRole('row')
+    expect(within(rows[0]).getAllByRole('columnheader').at(-1)).toHaveTextContent('Price')
+    expect(within(rows[1]).getAllByRole('cell').at(-1)).toHaveTextContent('$19.90')
+    expect(within(rows[2]).getAllByRole('cell').at(-1)).toHaveTextContent('$1,234.00')
   })
 
   it('puts the full name in a tooltip so truncated names can still be read', async () => {

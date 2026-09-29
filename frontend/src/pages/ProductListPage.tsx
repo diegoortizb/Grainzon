@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import Pagination from '../components/Pagination'
+import { formatPrice } from '../format'
 import { useProducts } from '../hooks/useProducts'
 
 // The backend caps size at 100.
@@ -85,6 +86,7 @@ function ProductListPage() {
             <tr>
               <th>ID</th>
               <th>Name</th>
+              <th className="price">Price</th>
             </tr>
           </thead>
           <tbody>
@@ -103,6 +105,7 @@ function ProductListPage() {
                     {p.name}
                   </button>
                 </td>
+                <td className="price">{formatPrice(p.itemPrice)}</td>
               </tr>
             ))}
           </tbody>

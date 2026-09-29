@@ -41,6 +41,7 @@ Tests mirror this layout: `@WebMvcTest` for controllers (service mocked) and pla
 - `hooks/`: data loading (for example `useProducts(page, size)`)
 - `components/`: reusable UI (`Layout` with the tabs, `Pagination`)
 - `pages/`: one component per route
+- `format.ts`: display formatting shared by pages (`formatPrice` shows prices as USD, for example `$1,234.00`)
 - `App.tsx`: route table. `index.css` holds all styles.
 
 The list page keeps its state in the URL: `?page=` is one-based (zero-based in the API) and `?size=` is 10, 50 or 100. Defaults are left out of the URL, invalid values fall back to them, and changing the size returns to page 1. Vite forwards `/api` requests to `localhost:8080`.

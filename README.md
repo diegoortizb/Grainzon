@@ -68,13 +68,13 @@ Without npm scripts at the root: `cd frontend && npm run dev`. Requests to `/api
 ## Verify
 
 1. Open http://localhost:3000. You land on **All products**.
-2. Click **Add product**, type `P1` and press **Add**. You should see `Added “P1”.`
-3. Click **All products** and confirm `P1` is in the list. The list is sorted by id, so if the database already has products (for example after `npm run db:seed`), `P1` is on the last page.
+2. Click **Add product**, type `P1`, enter `9.99` as the price and press **Add**. You should see `Added “P1” at $9.99.` The price is optional; left empty, it is $0.00.
+3. Click **All products** and confirm `P1` is in the list with `$9.99` in the Price column. The list is sorted by id, so if the database already has products (for example after `npm run db:seed`), `P1` is on the last page.
 
 The same check against the API alone:
 
 ```sh
-curl -X POST http://localhost:8080/api/products -H "Content-Type: application/json" -d '{"name":"P1"}'
+curl -X POST http://localhost:8080/api/products -H "Content-Type: application/json" -d '{"name":"P1","itemPrice":9.99}'
 curl "http://localhost:8080/api/products?page=0&size=10"
 ```
 
