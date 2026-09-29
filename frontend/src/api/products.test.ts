@@ -7,7 +7,7 @@ function mockFetch(status: number, body: unknown = {}) {
 
 describe('listProducts', () => {
   it('requests the given page and size and returns the JSON', async () => {
-    const page = { content: [{ id: 1, name: 'Hammer' }], page: 2, size: 5, totalElements: 11, totalPages: 3 }
+    const page = { content: [{ id: 1, name: 'Hammer', itemPrice: 0 }], page: 2, size: 5, totalElements: 11, totalPages: 3 }
     const fetch = mockFetch(200, page)
 
     await expect(listProducts(2, 5)).resolves.toEqual(page)
@@ -29,9 +29,9 @@ describe('listProducts', () => {
 
 describe('createProduct', () => {
   it('posts the name as JSON and returns the created product', async () => {
-    const fetch = mockFetch(201, { id: 7, name: 'Drill' })
+    const fetch = mockFetch(201, { id: 7, name: 'Drill', itemPrice: 0 })
 
-    await expect(createProduct('Drill')).resolves.toEqual({ id: 7, name: 'Drill' })
+    await expect(createProduct('Drill')).resolves.toEqual({ id: 7, name: 'Drill', itemPrice: 0 })
     expect(fetch).toHaveBeenCalledWith('/api/products', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

@@ -27,7 +27,7 @@ describe('ProductListPage', () => {
 
   it('lists the products on the first page', async () => {
     vi.mocked(listProducts).mockResolvedValue(
-      page({ content: [{ id: 1, name: 'Hammer' }, { id: 2, name: 'Wrench' }], totalElements: 2, totalPages: 1 }),
+      page({ content: [{ id: 1, name: 'Hammer', itemPrice: 0 }, { id: 2, name: 'Wrench', itemPrice: 0 }], totalElements: 2, totalPages: 1 }),
     )
     renderAt('/products')
 
@@ -39,7 +39,7 @@ describe('ProductListPage', () => {
 
   it('puts the full name in a tooltip so truncated names can still be read', async () => {
     const name = 'a'.repeat(256)
-    vi.mocked(listProducts).mockResolvedValue(page({ content: [{ id: 1, name }], totalElements: 1, totalPages: 1 }))
+    vi.mocked(listProducts).mockResolvedValue(page({ content: [{ id: 1, name, itemPrice: 0 }], totalElements: 1, totalPages: 1 }))
     renderAt('/products')
 
     expect(await screen.findByText(name)).toHaveAttribute('title', name)
@@ -47,7 +47,7 @@ describe('ProductListPage', () => {
 
   it('expands and collapses a name when it is clicked, one row at a time', async () => {
     vi.mocked(listProducts).mockResolvedValue(
-      page({ content: [{ id: 1, name: 'Hammer' }, { id: 2, name: 'Wrench' }], totalElements: 2, totalPages: 1 }),
+      page({ content: [{ id: 1, name: 'Hammer', itemPrice: 0 }, { id: 2, name: 'Wrench', itemPrice: 0 }], totalElements: 2, totalPages: 1 }),
     )
     renderAt('/products')
     const hammer = await screen.findByRole('button', { name: 'Hammer' })
@@ -94,7 +94,7 @@ describe('ProductListPage', () => {
   })
 
   it('uses the page size from the URL', async () => {
-    vi.mocked(listProducts).mockResolvedValue(page({ size: 50, totalElements: 1, totalPages: 1, content: [{ id: 1, name: 'Hammer' }] }))
+    vi.mocked(listProducts).mockResolvedValue(page({ size: 50, totalElements: 1, totalPages: 1, content: [{ id: 1, name: 'Hammer', itemPrice: 0 }] }))
     renderAt('/products?size=50')
 
     await screen.findByText('Hammer')
@@ -103,7 +103,7 @@ describe('ProductListPage', () => {
   })
 
   it.each(['7', '1000', 'abc'])('falls back to 10 per page for ?size=%s', async (value) => {
-    vi.mocked(listProducts).mockResolvedValue(page({ totalElements: 1, totalPages: 1, content: [{ id: 1, name: 'Hammer' }] }))
+    vi.mocked(listProducts).mockResolvedValue(page({ totalElements: 1, totalPages: 1, content: [{ id: 1, name: 'Hammer', itemPrice: 0 }] }))
     renderAt(`/products?size=${value}`)
 
     await screen.findByText('Hammer')
@@ -113,7 +113,7 @@ describe('ProductListPage', () => {
 
   it('goes back to the first page when the page size changes', async () => {
     vi.mocked(listProducts).mockImplementation(async (p, s) =>
-      page({ content: [{ id: 1, name: `Page ${p} size ${s}` }], page: p, size: s, totalElements: 60, totalPages: Math.ceil(60 / s) }),
+      page({ content: [{ id: 1, name: `Page ${p} size ${s}`, itemPrice: 0 }], page: p, size: s, totalElements: 60, totalPages: Math.ceil(60 / s) }),
     )
     renderAt('/products?page=3')
 
@@ -126,7 +126,7 @@ describe('ProductListPage', () => {
 
   it('keeps the page size when moving between pages', async () => {
     vi.mocked(listProducts).mockImplementation(async (p, s) =>
-      page({ content: [{ id: 1, name: `Page ${p} size ${s}` }], page: p, size: s, totalElements: 60, totalPages: 2 }),
+      page({ content: [{ id: 1, name: `Page ${p} size ${s}`, itemPrice: 0 }], page: p, size: s, totalElements: 60, totalPages: 2 }),
     )
     renderAt('/products?size=50')
 
@@ -138,7 +138,7 @@ describe('ProductListPage', () => {
 
   it('moves to the last page when the URL points past it', async () => {
     vi.mocked(listProducts).mockImplementation(async (p, s) =>
-      page({ content: p < 25 ? [{ id: p + 1, name: `Product on page ${p}` }] : [], page: p, size: s, totalElements: 250, totalPages: 25 }),
+      page({ content: p < 25 ? [{ id: p + 1, name: `Product on page ${p}`, itemPrice: 0 }] : [], page: p, size: s, totalElements: 250, totalPages: 25 }),
     )
     renderAt('/products?page=30')
 
@@ -151,7 +151,7 @@ describe('ProductListPage', () => {
 
   it('keeps the page size when moving back to the last page', async () => {
     vi.mocked(listProducts).mockImplementation(async (p, s) =>
-      page({ content: p < 5 ? [{ id: p + 1, name: `Page ${p} size ${s}` }] : [], page: p, size: s, totalElements: 250, totalPages: 5 }),
+      page({ content: p < 5 ? [{ id: p + 1, name: `Page ${p} size ${s}`, itemPrice: 0 }] : [], page: p, size: s, totalElements: 250, totalPages: 5 }),
     )
     renderAt('/products?page=9&size=50')
 
@@ -161,7 +161,7 @@ describe('ProductListPage', () => {
 
   it('loads the next page when Next is clicked', async () => {
     vi.mocked(listProducts).mockImplementation(async (p) =>
-      page({ content: [{ id: p + 1, name: `Product on page ${p}` }], page: p, totalElements: 15, totalPages: 2 }),
+      page({ content: [{ id: p + 1, name: `Product on page ${p}`, itemPrice: 0 }], page: p, totalElements: 15, totalPages: 2 }),
     )
     renderAt('/products')
 

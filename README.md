@@ -102,7 +102,9 @@ On Windows, run these from PowerShell or cmd. A WSL terminal can't see the Windo
 | Method | Path            | Body               | Response                  |
 |--------|-----------------|--------------------|---------------------------|
 | GET    | `/api/products?page=0&size=10` |     | `200` one page: `{content, page, size, totalElements, totalPages}`. `page` is zero-based (default 0); `size` 1–100 (default 10) |
-| POST   | `/api/products` | `{"name": "..."}`  | `201` created product, `400` if name is blank, over 256 characters or contains control characters such as NUL, tab or newline (surrounding whitespace is trimmed first) |
+| POST   | `/api/products` | `{"name": "...", "itemPrice": 0}`  | `201` created product, `400` if name is blank, over 256 characters or contains control characters such as NUL, tab or newline (surrounding whitespace is trimmed first), or if `itemPrice` is negative. `itemPrice` is optional and defaults to 0 |
+
+A product is `{id, name, itemPrice}`. `itemPrice` is a number (stored as `DOUBLE PRECISION`, never null, default 0).
 
 ## Errors and logging
 

@@ -18,11 +18,15 @@ public class Product {
 	@Column(nullable = false)
 	private String name;
 
+	@Column(nullable = false)
+	private double itemPrice;
+
 	protected Product() {
 	}
 
-	public Product(String name) {
+	public Product(String name, double itemPrice) {
 		this.name = name;
+		this.itemPrice = itemPrice;
 	}
 
 	public Integer getId() {
@@ -31,6 +35,10 @@ public class Product {
 
 	public String getName() {
 		return name;
+	}
+
+	public double getItemPrice() {
+		return itemPrice;
 	}
 
 }

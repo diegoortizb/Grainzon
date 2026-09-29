@@ -4,7 +4,7 @@ A minimal products app: list products (paged, 10, 50 or 100 per page; default 10
 
 - **backend/**: Spring Boot 4.1 on Java 25, built with Gradle (Groovy `build.gradle`). REST API under `/api/products`.
 - **frontend/**: React 19 + TypeScript + Vite, with React Router. Two tabs: `/products` (paged list) and `/products/new` (add form).
-- **Database**: PostgreSQL 18 via `docker-compose.yml`. Flyway owns the schema. There is one table, `products` (`id` integer identity, `name` text not null).
+- **Database**: PostgreSQL 18 via `docker-compose.yml`. Flyway owns the schema. There is one table, `products` (`id` integer identity, `name` text not null, `item_price` double precision not null default 0).
 
 The README is the human-facing guide. Read it for run steps, the API contract and database settings.
 

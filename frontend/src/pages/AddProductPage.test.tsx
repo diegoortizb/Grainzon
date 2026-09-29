@@ -24,7 +24,7 @@ describe('AddProductPage', () => {
   })
 
   it('creates the trimmed name, confirms it and clears the form', async () => {
-    vi.mocked(createProduct).mockResolvedValue({ id: 7, name: 'Drill' })
+    vi.mocked(createProduct).mockResolvedValue({ id: 7, name: 'Drill', itemPrice: 0 })
     render(<AddProductPage />)
     const input = screen.getByLabelText('Name')
 

@@ -45,7 +45,7 @@ class ProductControllerTests {
 	@Test
 	void listDefaultsToFirstPageOfTen() throws Exception {
 		given(productService.list(0, 10)).willReturn(
-				new PageResponse<>(List.of(new ProductResponse(1, "Hammer"), new ProductResponse(2, "Wrench")), 0, 10, 2, 1));
+				new PageResponse<>(List.of(new ProductResponse(1, "Hammer", 0.0), new ProductResponse(2, "Wrench", 0.0)), 0, 10, 2, 1));
 
 		mvc.perform(get("/api/products"))
 			.andExpect(status().isOk())
@@ -79,13 +79,36 @@ class ProductControllerTests {
 
 	@Test
 	void createReturnsCreatedProduct() throws Exception {
-		given(productService.create(any(CreateProductRequest.class))).willReturn(new ProductResponse(7, "Drill"));
+		given(productService.create(any(CreateProductRequest.class))).willReturn(new ProductResponse(7, "Drill", 0.0));
 
 		mvc.perform(post("/api/products").contentType(MediaType.APPLICATION_JSON).content("{\"name\":\"Drill\"}"))
 			.andExpect(status().isCreated())
 			.andExpect(header().string("Location", "/api/products/7"))
 			.andExpect(jsonPath("$.id").value(7))
-			.andExpect(jsonPath("$.name").value("Drill"));
+			.andExpect(jsonPath("$.name").value("Drill"))
+			.andExpect(jsonPath("$.itemPrice").value(0.0));
+	}
+
+	@Test
+	void createPassesItemPrice() throws Exception {
+		given(productService.create(any(CreateProductRequest.class))).willReturn(new ProductResponse(7, "Drill", 19.99));
+
+		mvc.perform(post("/api/products").contentType(MediaType.APPLICATION_JSON)
+			.content("{\"name\":\"Drill\",\"itemPrice\":19.99}"))
+			.andExpect(status().isCreated())
+			.andExpect(jsonPath("$.itemPrice").value(19.99));
+
+		verify(productService).create(new CreateProductRequest("Drill", 19.99));
+	}
+
+	@Test
+	void createRejectsNegativeItemPrice() throws Exception {
+		mvc.perform(post("/api/products").contentType(MediaType.APPLICATION_JSON)
+			.content("{\"name\":\"Drill\",\"itemPrice\":-1}"))
+			.andExpect(status().isBadRequest())
+			.andExpect(jsonPath("$.errors.itemPrice").exists());
+
+		verify(productService, never()).create(any());
 	}
 
 	@Test
@@ -109,12 +132,12 @@ class ProductControllerTests {
 	@Test
 	void createAcceptsNameAtMaxLength() throws Exception {
 		String name = "a".repeat(256);
-		given(productService.create(any(CreateProductRequest.class))).willReturn(new ProductResponse(1, name));
+		given(productService.create(any(CreateProductRequest.class))).willReturn(new ProductResponse(1, name, 0.0));
 
 		mvc.perform(post("/api/products").contentType(MediaType.APPLICATION_JSON).content(json(name)))
 			.andExpect(status().isCreated());
 
-		verify(productService).create(new CreateProductRequest(name));
+		verify(productService).create(new CreateProductRequest(name, null));
 	}
 
 	@Test
@@ -128,12 +151,12 @@ class ProductControllerTests {
 	@Test
 	void createAppliesMaxLengthAfterTrimming() throws Exception {
 		String name = "a".repeat(256);
-		given(productService.create(any(CreateProductRequest.class))).willReturn(new ProductResponse(1, name));
+		given(productService.create(any(CreateProductRequest.class))).willReturn(new ProductResponse(1, name, 0.0));
 
 		mvc.perform(post("/api/products").contentType(MediaType.APPLICATION_JSON).content(json("  " + name + "  ")))
 			.andExpect(status().isCreated());
 
-		verify(productService).create(new CreateProductRequest(name));
+		verify(productService).create(new CreateProductRequest(name, null));
 	}
 
 	@Test
@@ -150,13 +173,13 @@ class ProductControllerTests {
 	@Test
 	void createAcceptsPunctuationAndNonAsciiLetters() throws Exception {
 		String name = "3/4\" Hex Bolt & O'Brien Café M8×1.25";
-		given(productService.create(any(CreateProductRequest.class))).willReturn(new ProductResponse(1, name));
+		given(productService.create(any(CreateProductRequest.class))).willReturn(new ProductResponse(1, name, 0.0));
 
 		mvc.perform(post("/api/products").contentType(MediaType.APPLICATION_JSON)
 			.content("{\"name\":\"3/4\\\" Hex Bolt & O'Brien Café M8×1.25\"}"))
 			.andExpect(status().isCreated());
 
-		verify(productService).create(new CreateProductRequest(name));
+		verify(productService).create(new CreateProductRequest(name, null));
 	}
 
 	@Test

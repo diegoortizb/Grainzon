@@ -36,7 +36,7 @@ public class ProductService {
 	@Transactional
 	public ProductResponse create(CreateProductRequest request) {
 		log.debug("Creating product name='{}'", request.name());
-		Product saved = repository.save(new Product(request.name()));
+		Product saved = repository.save(new Product(request.name(), request.itemPrice()));
 		log.info("Created product id={}", saved.getId());
 		return ProductResponse.from(saved);
 	}

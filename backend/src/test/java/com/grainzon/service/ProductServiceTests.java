@@ -41,7 +41,7 @@ class ProductServiceTests {
 
 		PageResponse<ProductResponse> page = productService.list(1, 2);
 
-		assertThat(page.content()).containsExactly(new ProductResponse(3, "Saw"), new ProductResponse(4, "Drill"));
+		assertThat(page.content()).containsExactly(new ProductResponse(3, "Saw", 0.0), new ProductResponse(4, "Drill", 0.0));
 		assertThat(page.page()).isEqualTo(1);
 		assertThat(page.size()).isEqualTo(2);
 		assertThat(page.totalElements()).isEqualTo(5);
@@ -50,18 +50,23 @@ class ProductServiceTests {
 
 	@Test
 	void createSavesProductAndReturnsIt() {
-		given(repository.save(any(Product.class))).willReturn(product(7, "Drill"));
+		given(repository.save(any(Product.class))).willReturn(product(7, "Drill", 19.99));
 
-		ProductResponse created = productService.create(new CreateProductRequest("Drill"));
+		ProductResponse created = productService.create(new CreateProductRequest("Drill", 19.99));
 
 		ArgumentCaptor<Product> saved = ArgumentCaptor.forClass(Product.class);
 		verify(repository).save(saved.capture());
 		assertThat(saved.getValue().getName()).isEqualTo("Drill");
-		assertThat(created).isEqualTo(new ProductResponse(7, "Drill"));
+		assertThat(saved.getValue().getItemPrice()).isEqualTo(19.99);
+		assertThat(created).isEqualTo(new ProductResponse(7, "Drill", 19.99));
 	}
 
 	private static Product product(int id, String name) {
-		Product product = new Product(name);
+		return product(id, name, 0.0);
+	}
+
+	private static Product product(int id, String name, double itemPrice) {
+		Product product = new Product(name, itemPrice);
 		ReflectionTestUtils.setField(product, "id", id);
 		return product;
 	}

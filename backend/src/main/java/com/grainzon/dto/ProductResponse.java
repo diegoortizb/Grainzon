@@ -2,10 +2,10 @@ package com.grainzon.dto;
 
 import com.grainzon.entity.Product;
 
-public record ProductResponse(Integer id, String name) {
+public record ProductResponse(Integer id, String name, double itemPrice) {
 
 	public static ProductResponse from(Product product) {
-		return new ProductResponse(product.getId(), product.getName());
+		return new ProductResponse(product.getId(), product.getName(), product.getItemPrice());
 	}
 
 }
